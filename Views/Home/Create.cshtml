@@ -1,0 +1,176 @@
+﻿@model EnFoco_new.Models.Notice
+
+@{
+    ViewData["Title"] = "Crear Noticia";
+}
+
+<div class="p-5">
+    <h3 class="mb-4">Crear Noticia</h3>
+
+    <form id="createForm" asp-controller="Home" asp-action="Create" method="post" enctype="multipart/form-data">
+        <div class="form-group mt-3 mb-3">
+            <label asp-for="Title" class="control-label">Título:</label>
+            <input required type="text" class="form-control rounded-2" asp-for="Title" />
+            <span asp-validation-for="Title" class="text-danger"></span>
+        </div>
+
+        <div class="form-group mt-3 mb-3">
+            <label asp-for="Subtitle" class="control-label">Subtítulo:</label>
+            <input required type="text" class="form-control rounded-2" asp-for="Subtitle" />
+            <span asp-validation-for="Subtitle" class="text-danger"></span>
+        </div>
+
+        <div class="form-group mt-3 mb-3">
+            <label asp-for="Issue" class="control-label">Tema:</label>
+            <input required type="text" class="form-control rounded-2" asp-for="Issue" />
+            <span asp-validation-for="Issue" class="text-danger"></span>
+        </div>
+
+        <div class="form-group mt-3 mb-3">
+            <label asp-for="Text" class="control-label">Contenido:</label>
+            <div id="editor">
+                <textarea class="form-control rounded-2" id="Text" name="Text" rows="4" required></textarea>
+            </div>
+            <span asp-validation-for="Text" class="text-danger"></span>
+        </div>
+
+        <div class="form-group mt-3 mb-3">
+            <label asp-for="ImageFile" class="control-label">Imagen:</label>
+            <input type="file" class="form-control rounded-2" asp-for="ImageFile" accept="image/*" />
+            <span asp-validation-for="ImageFile" class="text-danger"></span>
+            <img class="img-thumbnail" id="previewImage" src="#" alt="Vista previa de la imagen" style="max-width: 200px;display: none;position: relative;top: 10px;" />
+        </div>
+
+        <div class="form-group mt-3 mb-3 d-none">
+            <label asp-for="Img" class="control-label">Ruta de la imagen (se guardará):</label>
+            <input type="text" class="form-control rounded-2" asp-for="Img" readonly /> <span class="text-info">Este campo se completará automáticamente.</span>
+            <span asp-validation-for="Img" class="text-danger"></span>
+        </div>
+
+        <div class="form-group mt-3 mb-3">
+            <label asp-for="Category" class="control-label">Categoría:</label>
+            <select class="form-control rounded-2" asp-for="Category">
+                <option value="tribunal">Tribunal</option>
+                <option value="fiscalia">Fiscalía</option>
+                <option value="etica">Ética</option>
+            </select>
+            <span asp-validation-for="Category" class="text-danger"></span>
+        </div>
+
+        <div class="form-group mt-3 mb-3">
+            <label asp-for="Section" class="control-label">Sección:</label>
+            <select class="form-control rounded-2" asp-for="Section">
+                <option value="category1">Editorial</option>
+                <option value="category2">Noticias</option>
+                <option value="category3">Análisis</option>
+            </select>
+            <span asp-validation-for="Section" class="text-danger"></span>
+        </div>
+
+        <button type="submit" class="btn naranja mt-3 mb-3 rounded-2">Guardar</button>
+    </form>
+</div>
+
+
+
+<script>
+    // eyJhbGciOiJFUzI1NiJ9.eyJleHAiOjE3NzEwMjcxOTksImp0aSI6IjMwMzRhNzBkLWMyMDktNDhjZC04NzEzLWUxMDdmN2MxZGYyNCIsInVzYWdlRW5kcG9pbnQiOiJodHRwczovL3Byb3h5LWV2ZW50LmNrZWRpdG9yLmNvbSIsImRpc3RyaWJ1dGlvbkNoYW5uZWwiOlsiY2xvdWQiLCJkcnVwYWwiXSwiZmVhdHVyZXMiOlsiRFJVUCJdLCJ2YyI6IjdjYjhkNjQ2In0.F4BQjWS-4-_wdT12TftoOu0FfB2erOxxdaOQh9ASlF1YhCyG-m523RSQKGhPnn0U2tK9Bf_Op5kSJR6hPditFQ
+
+    // const { ClassicEditor, Essentials, Bold, Italic, Font, Paragraph, MediaEmbed, SourceEditing, Image, ImageToolbar, ImageUpload, ImageInsert } = CKEDITOR;
+
+    // ClassicEditor
+    //     .create(document.querySelector('#Text'), {
+    //         licenseKey: 'eyJhbGciOiJFUzI1NiJ9.eyJhbGciOiJFUzI1NiJ9.eyJleHAiOjE3NzEwMjcxOTksImp0aSI6IjMwMzRhNzBkLWMyMDktNDhjZC04NzEzLWUxMDdmN2MxZGYyNCIsInVzYWdlRW5kcG9pbnQiOiJodHRwczovL3Byb3h5LWV2ZW50LmNrZWRpdG9yLmNvbSIsImRpc3RyaWJ1dGlvbkNoYW5uZWwiOlsiY2xvdWQiLCJkcnVwYWwiXSwiZmVhdHVyZXMiOlsiRFJVUCJdLCJ2YyI6IjdjYjhkNjQ2In0.F4BQjWS-4-_wdT12TftoOu0FfB2erOxxdaOQh9ASlF1YhCyG-m523RSQKGhPnn0U2tK9Bf_Op5kSJR6hPditFQ.F4BQjWS-4-_wdT12TftoOu0FfB2erOxxdaOQh9ASlF1YhCyG-m523RSQKGhPnn0U2tK9Bf_Op5kSJR6hPditFQ',
+    //         plugins: [Essentials, Bold, Italic, Font, Paragraph, MediaEmbed, SourceEditing],
+    //         toolbar: [
+    //             'undo', 'redo', '|', 'bold', 'italic', '|',
+    //             'fontSize', 'fontFamily', 'fontColor', 'fontBackgroundColor', '|',
+    //             'mediaEmbed', '|', 'sourceEditing' 
+    //         ],
+    //         mediaEmbed: {
+    //             previewsInData: true
+    //         },
+    //         allowedContent: true
+    //     })
+    //     .then(editor => {
+    //         window.editor = editor;
+    //     })
+    //     .catch(error => {
+    //         console.error('Error al inicializar CKEditor:', error);
+    //     });
+
+
+    const demoBaseConfig = {
+        selector: 'textarea#Text',
+        width: "100%",
+        height: 500,
+        resize: false,
+        autosave_ask_before_unload: false,
+        powerpaste_allow_local_images: true,
+        plugins: [
+            'a11ychecker', 'advcode', 'advlist', 'anchor', 'autolink', 'codesample', 'fullscreen', 'help',
+            'image', 'editimage', 'tinydrive', 'lists', 'link', 'media', 'powerpaste', 'preview',
+            'searchreplace', 'table', 'tinymcespellchecker', 'visualblocks', 'wordcount'
+        ],
+        toolbar: 'insertfile a11ycheck undo redo | bold italic | forecolor backcolor | codesample | alignleft aligncenter alignright alignjustify | bullist numlist | link image',
+        spellchecker_dialog: true,
+        spellchecker_ignore_list: ['Ephox', 'Moxiecode'],
+        tinydrive_demo_files_url: '../_images/tiny-drive-demo/demo_files.json',
+        tinydrive_token_provider: (success, failure) => {
+            success({ token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJqb2huZG9lIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.Ks_BdfH4CWilyzLNk8S2gDARFhuxIauLa8PwhdEQhEo' });
+        },
+        content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:16px }'
+    };
+
+    tinymce.init(demoBaseConfig);
+
+
+    document.querySelector('#ImageFile').addEventListener('change', function (e) {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                document.querySelector('#previewImage').src = e.target.result;
+                document.querySelector('#previewImage').style.display = 'block';
+            }
+            reader.readAsDataURL(file);
+        } else {
+            document.querySelector('#previewImage').src = '#';
+            document.querySelector('#previewImage').style.display = 'none';
+        }
+    });
+
+
+
+
+    document.querySelector('#createForm').addEventListener('submit', function (e) {
+        e.preventDefault();
+
+        if (document.querySelector('button[type="submit"]').disabled) {
+            console.log("Intento de envío bloqueado porque la imagen es vertical.");
+            return;
+        }
+
+        // Obtener el nombre del archivo
+        const fileInput = document.getElementById('ImageFile');
+        const file = fileInput.files[0];
+        if (file) {
+            document.getElementById('Img').value = "~/img/" + file.name; // Asigna la ruta en el campo Img
+        }
+
+        Swal.fire({
+            title: '¿Estás seguro?',
+            text: '¿Quieres guardar esta noticia?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Guardar'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                this.submit();
+            }
+        });
+    });
+
+</script>

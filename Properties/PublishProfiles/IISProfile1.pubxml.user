@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!--
+https://go.microsoft.com/fwlink/?LinkID=208121.
+-->
+<Project>
+  <PropertyGroup>
+    <TimeStampOfAssociatedLegacyPublishXmlFile />
+    <EncryptedPassword>
+    </EncryptedPassword>
+    <History>True|2025-02-20T15:36:47.6301593Z;False|2025-02-20T12:36:23.3285831-03:00;True|2025-02-20T11:48:03.8394748-03:00;False|2025-02-20T11:46:59.4888730-03:00;False|2025-02-20T11:46:33.3565074-03:00;True|2025-02-20T11:26:19.5902261-03:00;True|2025-02-20T11:25:46.9632194-03:00;False|2025-02-20T11:25:01.1413558-03:00;True|2025-02-20T11:24:19.0112988-03:00;True|2025-02-20T11:23:27.8871700-03:00;True|2025-02-20T11:22:53.7416098-03:00;True|2025-02-20T11:21:33.0004938-03:00;</History>
+    <LastFailureDetails />
+  </PropertyGroup>
+  <ItemGroup>
+    <DestinationConnectionStrings Include="EnFocoDB">
+      <Value>Server=SQLDESARROLLO%3bDatabase=EnFoco%3bIntegrated Security=True%3bTrustServerCertificate=True%3b</Value>
+    </DestinationConnectionStrings>
+  </ItemGroup>
+</Project>

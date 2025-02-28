@@ -1,0 +1,153 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - La Revista Digital de los Organismos de Control Externo de Mendoza</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/EnFoco_new.styles.css" asp-append-version="true" />
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.5.5/dist/sweetalert2.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.ckeditor.com/ckeditor5/44.2.0/ckeditor5.css" />
+    <script src="https://cdn.ckeditor.com/ckeditor5/44.2.0/ckeditor5.umd.js"></script>
+    <script src="https://cdn.tiny.cloud/1/n3658bjfxk6kxdcoj5vwh25qgp4dvdtag9afsgxynjck0vte/tinymce/7/tinymce.min.js" referrerpolicy="origin"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body>
+     <header class="z-3">
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm border-bottom shadow-sm p-3 align-items-center">
+            <div class="container-fluid">
+                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index"><img class="w-75" src="~/img/logo.png" /></a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                        aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="20" height="20" viewBox="0 0 50 50" style="fill: #424642;">
+                            <path d="M 0 7.5 L 0 12.5 L 50 12.5 L 50 7.5 Z M 0 22.5 L 0 27.5 L 50 27.5 L 50 22.5 Z M 0 37.5 L 0 42.5 L 50 42.5 L 50 37.5 Z"></path>
+                        </svg>
+                    </span>
+                </button>
+                <div class="navbar-collapse collapse d-sm-inline-flex">
+                    <ul class="navbar-nav flex-grow-1 justify-content-end nav-gap align-items-center col">
+                        <li class="nav-item">
+                            <a class="nav-link text-dark fs-6" asp-area="" asp-controller="Home" asp-action="Index">INICIO</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark fs-6" asp-area="" asp-controller="Home" asp-action="Editorial">EDITORIAL</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark fs-6" asp-area="" asp-controller="Home" asp-action="Noticias">NOTICIAS</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark fs-6" asp-area="" asp-controller="Home" asp-action="Analisis">ANÁLISIS</a>
+                        </li>
+
+                        @if (User.Identity.IsAuthenticated)
+                        {
+                            <li class="nav-item">
+                                <form id="logoutForm" method="post" asp-controller="Home" asp-action="Logout">
+                                    <button class="btn text-light bg-danger me-3 ms-3" type="submit">Cerrar Sesión</button>
+                                </form>
+                            </li>
+                            <li class="nav-item me-2 p-3">
+                                <a asp-controller="Home" asp-action="Create">
+                                    <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="30 " height="30" viewBox="0,0,256,256"><g fill="#c06014" fill-rule="nonzero" stroke="none" stroke-width="1" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0" font-family="none" font-weight="none" font-size="none" text-anchor="none" style="mix-blend-mode: normal"><g transform="scale(2,2)"><path d="M115.01172,1.46289c-3.0625,0.0125 -6.11211,1.18711 -8.41211,3.53711l-37.40039,37.30078c-9.2,9.2 -16.1,20.69922 -20,33.19922c-0.3,1.1 0.00117,2.2 0.70117,3c0.6,0.6 1.29961,0.90039 2.09961,0.90039c0.3,0 0.60039,0.00039 0.90039,-0.09961c12.5,-3.8 23.99922,-10.8 33.19922,-20l31.59961,-31.60156c0.9,1.2 1.40039,2.70117 1.40039,4.20117c0,1.9 -0.69961,3.60039 -2.09961,4.90039l-15.59961,15.59961c-1.2,1.2 -1.2,3.09922 0,4.19922c0.6,0.6 1.39961,0.90039 2.09961,0.90039c0.7,0 1.49961,-0.30039 2.09961,-0.90039l15.80078,-15.59961c2.5,-2.5 3.79883,-5.69922 3.79883,-9.19922c0,-3.1 -1.09961,-6.1 -3.09961,-8.5l1.40039,-1.40039c4.7,-4.7 4.7,-12.3 0,-17c-2.35,-2.3 -5.42578,-3.45 -8.48828,-3.4375zM19,6c-7.2,0 -13,5.8 -13,13v90c0,7.2 5.8,13 13,13h90c7.2,0 13,-5.8 13,-13v-40c0,-1.7 -1.3,-3 -3,-3c-1.7,0 -3,1.3 -3,3v40c0,3.9 -3.1,7 -7,7h-90c-3.9,0 -7,-3.1 -7,-7v-90c0,-3.9 3.1,-7 7,-7h60c1.7,0 3,-1.3 3,-3c0,-1.7 -1.3,-3 -3,-3zM115,7.5c1.5,0 3.09922,0.60078 4.19922,1.80078c2.4,2.3 2.40156,6.09844 0.10156,8.39844l-37.30078,37.30078c-7.1,7.1 -15.7,12.7 -25,16.5c3.7,-9.3 9.4,-17.80039 16.5,-24.90039l37.30078,-37.29883c1.2,-1.2 2.69922,-1.80078 4.19922,-1.80078z"></path></g></g></svg>
+                                </a>
+                            </li>
+                            <li class="nav-item me-2 p-3">
+                                <a asp-controller="Home" asp-action="Suscriptores">
+                                    <img width="32" height="32" src="https://img.icons8.com/ios-filled/50/C06014/email-open.png" alt="email-open" />
+                                </a>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link  me-3 ms-3 rounded-2" asp-controller="Home" asp-action="Login"><img width="26" height="26" src="https://img.icons8.com/material/24/000000/user-male-circle--v1.png" alt="user-male-circle--v1" /></a>
+                            </li>
+                        }
+
+
+
+                    </ul>
+                    <form class="d-flex" asp-controller="Home" asp-action="Search" role="search" method="get">
+                        <input class="form-control me-2" type="search" placeholder="buscar..." aria-label="Search" name="searchTerm">
+                        <button class="btn rounded-2" type="submit"><img class="w-100" src="~/img/lupa.png" alt="buscar"></button>
+                    </form>
+
+
+                </div>
+            </div>
+        </nav>
+    </header>
+    <div class="container-fluid">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer class="border-top footer">
+        <div class="container">
+            <nav class=" navbar navbar-expand-sm navbar-toggleable-sm justify-content-between">
+                <ul class="nav-footer navbar-nav flex organismos">
+                    <li class="nav-item p-1"><a target="_blank" href="https://www.tribunaldecuentas.mendoza.gov.ar/">Tribunal de Cuentas</a></li>
+
+                    <li class="nav-item p-1"><a target="_blank" href="http://fiscalia.mendoza.gov.ar/">Fiscalía de Estado</a></li>
+
+                    <li class="nav-item p-1"><a target="_blank" href="https://eticapublica.mendoza.gov.ar/">Ética Pública</a></li>
+                </ul>
+
+                <form class="newsletter" method="POST" action="/Home/SubscribeNewsletter">
+                    <h6 class="text-light text-end">Suscribite a nuestro <br /> Newsletter</h6>
+                    <div class="input-group flex-wrap w-50">
+                        <span class="input-group-text">&#64;</span>
+                        <input type="email" required class="form-control" placeholder="email" name="Email">
+                    </div>
+                    <button id="submitButton" class="btn naranja text-light rounded-2" type="submit">Enviar</button>
+
+
+                    <script>
+                        document.addEventListener("DOMContentLoaded", function () {
+                            const submitButton = document.getElementById("submitButton");
+                            const newsletterForm = document.querySelector(".newsletter");
+
+                            submitButton.addEventListener("click", function (e) {
+                                e.preventDefault(); // Prevenir el envío normal del formulario
+
+                                // Asegúrate de que la librería de SweetAlert2 esté cargada correctamente
+                                if (typeof Swal === 'undefined') {
+                                    console.error('SweetAlert2 no está cargado correctamente.');
+                                    return;
+                                }
+
+                                Swal.fire({
+                                    title: '¿Estás seguro?',
+                                    text: '¿Quieres suscribirte al newsletter?',
+                                    icon: 'warning',
+                                    showCancelButton: true,
+                                    confirmButtonColor: '#3085d6',
+                                    cancelButtonColor: '#d33',
+                                    confirmButtonText: 'Sí, suscribirme'
+                                }).then((result) => {
+                                    if (result.isConfirmed) {
+                                        // Enviar el formulario
+                                        newsletterForm.submit();
+                                    }
+                                });
+                            });
+                        });
+                    </script>
+
+
+                </form>
+            </nav>
+
+        </div>
+    </footer>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>
+@{
+    Html.RenderPartial("_ValidationScriptsPartial");
+}

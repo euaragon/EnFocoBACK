@@ -1,0 +1,279 @@
+﻿@model EnFoco_new.Models.NoticeDto
+
+@{
+    ViewData["Title"] = Model.Title;
+}
+
+@inject EnFoco_new.Services.NoticeService NoticeService
+@{
+    var notice = await NoticeService.GetNoticeByIdAsync(Model.Id);
+
+    var last5Notices = NoticeService.GetNotice()
+        .OrderByDescending(notice => notice.Id)
+        .Take(10)
+        .Where(notice => notice.Id != Model.Id)
+        .ToList();
+}
+
+<div class="row p-5">
+    <div class="col-md-8 container-fluid pt-5">
+        <a href="@Url.Action("Index", "Home")" class="btn volver">
+            <img style="position: relative; top:-1px;" width="24" height="24" src="https://img.icons8.com/material/24/000000/back--v1.png" alt="back--v1" />VOLVER
+        </a>
+
+        @if (User.Identity.IsAuthenticated)
+        {
+            <div class="d-grid gap-2 d-md-flex justify-content-md-end mb-3" id="topButtons">
+                <button class="btn btn-warning btn-sm btn-edit" id="editBtnTop">Editar</button>
+                <button class="btn btn-success btn-sm d-none" id="saveBtnTop">Guardar</button>
+                <button class="btn btn-secondary btn-sm d-none" id="cancelBtnTop">Cancelar</button>
+                <a href="#" class="text-white btn btn-danger btn-sm" onclick="showDeleteConfirmation('@Url.Action("Delete", "Home", new { id = Model.Id })')">Eliminar</a>
+            </div>
+        }
+
+        <h5 class="text-naranja notice-detail-issue">
+            <span id="issueText">@notice.Issue.ToUpper()</span>
+            <input type="text" id="issueInput" class="form-control d-none" value="@notice.Issue">
+        </h5>
+
+        <h2 class="notice-detail-title">
+            <span id="titleText">@notice.Title</span>
+            <input type="text" id="titleInput" class="form-control d-none" value="@notice.Title">
+        </h2>
+
+        <small>Creado el día @notice.CreatedAt</small>
+
+        <h3 class="notice-detail-subtitle">
+            <span id="subtitleText">@notice.Subtitle</span>
+            <input type="text" id="subtitleInput" class="form-control d-none" value="@notice.Subtitle">
+        </h3>
+
+        <img class="img-fluid img-thumbnail w-100 rounded-5" src="~/@notice.Img.TrimStart('/') " alt="@notice.Title">
+
+        <div class="content-notice mt-3 position-relative">
+            <div id="textText">
+                <p class="notice-detail-text">@Html.Raw(notice.Text)</p>
+            </div>
+            <div id="editor" class="d-none">
+                <textarea class="form-control rounded-2" id="Text" name="Text" rows="4" required>@Html.Raw(notice.Text)</textarea>
+            </div>
+        </div>
+
+        <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-3" id="bottomButtons">
+            @* Botones abajo *@
+            @if (User.Identity.IsAuthenticated)
+            {
+                <button class="btn btn-warning btn-sm btn-edit" id="editBtnBottom">Editar</button>
+                <button class="btn btn-success btn-sm d-none" id="saveBtnBottom">Guardar</button>
+                <button class="btn btn-secondary btn-sm d-none" id="cancelBtnBottom">Cancelar</button>
+                <a href="#" class="text-white btn btn-danger btn-sm" onclick="showDeleteConfirmation('@Url.Action("Delete", "Home", new { id = Model.Id })')">Eliminar</a>
+            }
+        </div>
+
+        <a href="@Url.Action("Index", "Home")" class="btn volver">
+            <img style="position: relative; top:-1px;" width="24" height="24" src="https://img.icons8.com/material/24/000000/back--v1.png" alt="back--v1" />VOLVER
+        </a>
+    </div>
+    <div class="col-md-3 offset-md-0 mt-5">
+        <h5>También te puede interesar...</h5>
+
+        @foreach (var last5Notice in last5Notices)
+        {
+            <a href="@Url.Action("Detail", "Home", new { id = last5Notice.Id })" class="list-group-item list-group-item-action">
+                <span class="list-group-item-text text-naranja">@last5Notice.Issue</span>
+                <p class="list-group-item-heading fw-bold">@last5Notice.Title</p>
+            </a>
+        }
+    </div>
+</div>
+
+
+<script>
+    // const { ClassicEditor, Essentials, Bold, Italic, Font, Paragraph, MediaEmbed, SourceEditing } = CKEDITOR;
+
+    // ClassicEditor
+    //     .create(document.querySelector('#Text'), {
+    //         licenseKey: 'eyJhbGciOiJFUzI1NiJ9.eyJleHAiOjE3NzEwMjcxOTksImp0aSI6IjMwMzRhNzBkLWMyMDktNDhjZC04NzEzLWUxMDdmN2MxZGYyNCIsInVzYWdlRW5kcG9pbnQiOiJodHRwczovL3Byb3h5LWV2ZW50LmNrZWRpdG9yLmNvbSIsImRpc3RyaWJ1dGlvbkNoYW5uZWwiOlsiY2xvdWQiLCJkcnVwYWwiXSwiZmVhdHVyZXMiOlsiRFJVUCJdLCJ2YyI6IjdjYjhkNjQ2In0.F4BQjWS-4-_wdT12TftoOu0FfB2erOxxdaOQh9ASlF1YhCyG-m523RSQKGhPnn0U2tK9Bf_Op5kSJR6hPditFQ',
+    //         plugins: [Essentials, Bold, Italic, Font, Paragraph, MediaEmbed, SourceEditing],
+    //         toolbar: [
+    //             'undo', 'redo', '|', 'bold', 'italic', '|',
+    //             'fontSize', 'fontFamily', 'fontColor', 'fontBackgroundColor', '|',
+    //             'mediaEmbed', '|', 'sourceEditing'
+    //         ],
+    //         mediaEmbed: {
+    //             previewsInData: true
+    //         },
+    //         allowedContent: true
+    //     })
+    //     .then(editor => {
+    //         window.editor = editor;
+    //     })
+    //     .catch(error => {
+    //         console.error('Error al inicializar CKEditor:', error);
+    //     });
+
+
+
+
+
+
+
+
+    document.addEventListener("DOMContentLoaded", function () {
+        const editBtnTop = document.getElementById("editBtnTop");
+        const saveBtnTop = document.getElementById("saveBtnTop");
+        const cancelBtnTop = document.getElementById("cancelBtnTop");
+
+        const editBtnBottom = document.getElementById("editBtnBottom");
+        const saveBtnBottom = document.getElementById("saveBtnBottom");
+        const cancelBtnBottom = document.getElementById("cancelBtnBottom");
+
+        const elements = [
+            { text: "issueText", input: "issueInput" },
+            { text: "titleText", input: "titleInput" },
+            { text: "subtitleText", input: "subtitleInput" },
+            { text: "textText", input: "editor" }
+        ];
+
+        let data = {
+            Id: @notice.Id,
+            Title: "@notice.Title",
+            Subtitle: "@notice.Subtitle",
+            Issue: "@notice.Issue",
+            Text: "@notice.Text",
+            Img: "@notice.Img",
+            IsFeatured: JSON.parse('@Html.Raw(Json.Serialize(@notice.IsFeatured))'),
+            Category: JSON.parse('@Html.Raw(Json.Serialize(@notice.Category))'),
+            Section: JSON.parse('@Html.Raw(Json.Serialize(@notice.Section))')
+        };
+
+        function handleEditClick() {
+            elements.forEach(el => {
+                document.getElementById(el.text).classList.add("d-none");
+                document.getElementById(el.input).classList.remove("d-none");
+            });
+
+            editBtnTop.classList.add("d-none");
+            saveBtnTop.classList.remove("d-none");
+            cancelBtnTop.classList.remove("d-none");
+
+            editBtnBottom.classList.add("d-none");
+            saveBtnBottom.classList.remove("d-none");
+            cancelBtnBottom.classList.remove("d-none");
+
+            const demoBaseConfig = {
+                selector: 'textarea#Text',
+                width: "100%",
+                height: 500,
+                resize: false,
+                autosave_ask_before_unload: false,
+                powerpaste_allow_local_images: true,
+                plugins: [
+                    'a11ychecker', 'advcode', 'advlist', 'anchor', 'autolink', 'codesample', 'fullscreen', 'help',
+                    'image', 'editimage', 'tinydrive', 'lists', 'link', 'media', 'powerpaste', 'preview',
+                    'searchreplace', 'table', 'tinymcespellchecker', 'visualblocks', 'wordcount'
+                ],
+                toolbar: 'insertfile a11ycheck undo redo | bold italic | forecolor backcolor | codesample | alignleft aligncenter alignright alignjustify | bullist numlist | link image',
+                spellchecker_dialog: true,
+                spellchecker_ignore_list: ['Ephox', 'Moxiecode'],
+                tinydrive_demo_files_url: '../_images/tiny-drive-demo/demo_files.json',
+                tinydrive_token_provider: (success, failure) => {
+                    success({ token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJqb2huZG9lIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.Ks_BdfH4CWilyzLNk8S2gDARFhuxIauLa8PwhdEQhEo' });
+                },
+                content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:16px }'
+            };
+
+            tinymce.init(demoBaseConfig);
+
+            document.querySelectorAll("p.notice-detail-text").forEach(p => p.style.display = "none"); // Hide paragraphs
+        }
+
+        function handleCancelClick() {
+            elements.forEach(el => {
+                document.getElementById(el.text).classList.remove("d-none");
+                document.getElementById(el.input).classList.add("d-none");
+            });
+
+            editBtnTop.classList.remove("d-none");
+            saveBtnTop.classList.add("d-none");
+            cancelBtnTop.classList.add("d-none");
+
+            editBtnBottom.classList.remove("d-none");
+            saveBtnBottom.classList.add("d-none");
+            cancelBtnBottom.classList.add("d-none");
+
+            // Restore visibility of paragraphs
+            document.querySelectorAll("p.notice-detail-text").forEach(p => p.style.display = "block");
+        }
+
+        function handleSaveClick() {
+            data.Title = document.getElementById("titleInput").value;
+            data.Subtitle = document.getElementById("subtitleInput").value;
+            data.Issue = document.getElementById("issueInput").value;
+            data.Text = tinymce.get('Text').getContent();
+
+            Swal.fire({
+                title: "¿Guardar cambios?",
+                text: "Los cambios realizados serán permanentes.",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#28a745",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Sí, guardar",
+                cancelButtonText: "Cancelar"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    fetch(`/${data.Id}`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(data)
+                    })
+                        .then(response => response.json())
+                        .then(responseData => {
+                            if (responseData.success) {
+                                Swal.fire("Guardado", responseData.message, "success")
+                                    .then(() => window.location.reload());
+                            } else {
+                                Swal.fire("Error", responseData.message, "error");
+                            }
+                        })
+                        .catch(error => {
+                            console.error("Error:", error);
+                            Swal.fire("Error", "No se pudo guardar la noticia. Revisa la consola.", "error");
+                        });
+                }
+            });
+        }
+
+
+        editBtnTop.addEventListener("click", handleEditClick);
+        cancelBtnTop.addEventListener("click", handleCancelClick);
+        saveBtnTop.addEventListener("click", handleSaveClick);
+
+        editBtnBottom.addEventListener("click", handleEditClick);
+        cancelBtnBottom.addEventListener("click", handleCancelClick);
+        saveBtnBottom.addEventListener("click", handleSaveClick);
+
+
+    });
+
+    function showDeleteConfirmation(deleteUrl) {
+        Swal.fire({
+            title: "¿Estás seguro?",
+            text: "No podrás revertir esta acción.",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#d33",
+            cancelButtonColor: "#6c757d",
+            confirmButtonText: "Sí, eliminar",
+            cancelButtonText: "Cancelar"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = deleteUrl;
+            }
+        });
+        return false;
+    }
+</script>
