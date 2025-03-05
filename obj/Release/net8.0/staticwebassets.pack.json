@@ -185,6 +185,10 @@
       "PackagePath": "staticwebassets\\img\\tribunal.png"
     },
     {
+      "Id": "C:\\Users\\earagon.TRIBUNAL\\Desktop\\EnFoco_new\\wwwroot\\img\\uvas.jpg",
+      "PackagePath": "staticwebassets\\img\\uvas.jpg"
+    },
+    {
       "Id": "C:\\Users\\earagon.TRIBUNAL\\Desktop\\EnFoco_new\\wwwroot\\js\\site.js",
       "PackagePath": "staticwebassets\\js\\site.js"
     },

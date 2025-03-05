@@ -136,3 +136,4 @@ C:\Users\earagon.TRIBUNAL\Desktop\EnFoco_new\obj\Debug\net8.0\EnFoco_new.pdb
 C:\Users\earagon.TRIBUNAL\Desktop\EnFoco_new\obj\Debug\net8.0\EnFoco_new.genruntimeconfig.cache
 C:\Users\earagon.TRIBUNAL\Desktop\EnFoco_new\obj\Debug\net8.0\ref\EnFoco_new.dll
 C:\Users\earagon.TRIBUNAL\Desktop\EnFoco_new\bin\Debug\net8.0\SixLabors.ImageSharp.dll
+C:\Users\earagon.TRIBUNAL\Desktop\EnFoco_new\obj\Debug\net8.0\EnFoco_new.sourcelink.json

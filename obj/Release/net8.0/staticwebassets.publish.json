@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "SEwV9eTkFS8UlVSOntoRNNuW2HlOCtGe2JntO1jUQww=",
+  "Hash": "ayKWj9vxtevG699EqERI4LvixRbrd5C7H1ERssyNVE4=",
   "Source": "EnFoco_new",
   "BasePath": "_content/EnFoco_new",
   "Mode": "Default",
@@ -908,6 +908,25 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot\\img\\tribunal.png"
+    },
+    {
+      "Identity": "C:\\Users\\earagon.TRIBUNAL\\Desktop\\EnFoco_new\\wwwroot\\img\\uvas.jpg",
+      "SourceId": "EnFoco_new",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Users\\earagon.TRIBUNAL\\Desktop\\EnFoco_new\\wwwroot\\",
+      "BasePath": "_content/EnFoco_new",
+      "RelativePath": "img/uvas.jpg",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "PreferTarget",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\img\\uvas.jpg"
     },
     {
       "Identity": "C:\\Users\\earagon.TRIBUNAL\\Desktop\\EnFoco_new\\wwwroot\\js\\site.js",
