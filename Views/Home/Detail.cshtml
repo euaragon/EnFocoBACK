@@ -75,11 +75,11 @@
         </a>
     </div>
     <div class="col-md-3 offset-md-0 mt-5">
-        <h5>También te puede interesar...</h5>
+        <h5 class="pb-3">También te puede interesar...</h5>
 
         @foreach (var last5Notice in last5Notices)
         {
-            <a href="@Url.Action("Detail", "Home", new { id = last5Notice.Id })" class="list-group-item list-group-item-action">
+            <a href="@Url.Action("Detail", "Home", new { id = last5Notice.Id })" class="list-group-item list-group-item-action p-2">
                 <span class="list-group-item-text text-naranja">@last5Notice.Issue</span>
                 <p class="list-group-item-heading fw-bold">@last5Notice.Title</p>
             </a>
@@ -195,13 +195,20 @@
                 cancelButtonText: "Cancelar"
             }).then((result) => {
                 if (result.isConfirmed) {
-                    fetch(`/${data.Id}`, {
+                    fetch(`/edit/${data.Id}`, { // Asegúrate de que esto coincida con la ruta del controlador
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json'
                         },
                         body: JSON.stringify(data)
                     })
+                    // fetch(`/${data.Id}`, {
+                    //     method: 'POST',
+                    //     headers: {
+                    //         'Content-Type': 'application/json'
+                    //     },
+                    //     body: JSON.stringify(data)
+                    // })
                         .then(response => response.json())
                         .then(responseData => {
                             if (responseData.success) {

@@ -83,11 +83,18 @@ app.MapPost("noticias/", async (Notice n, EnFocoDb db) =>
     return Results.Created($"noticias/{n.Id}", n);
 });
 
+//app.MapControllerRoute(
+//    name: "edit-route", // Nombre de la ruta (puede ser cualquiera)
+//    pattern: "{id}", 
+//    defaults: new { controller = "Home", action = "Edit" } // Controlador y acción
+
+//);
+
 app.MapControllerRoute(
-    name: "edit-route", // Nombre de la ruta (puede ser cualquiera)
-    pattern: "{id}", 
-    defaults: new { controller = "Home", action = "Edit" } // Controlador y acción
-    
+    name: "edit-route",
+    pattern: "{id}",
+    defaults: new { controller = "Home", action = "Edit" },
+    constraints: new { httpMethod = new HttpMethodRouteConstraint("GET") }
 );
 
 app.MapControllerRoute(

@@ -247,7 +247,7 @@ namespace EnFoco_new.Controllers
                         await notice.ImageFile.CopyToAsync(stream);
                     }
 
-                    notice.Img = "~/img/" + fileName;
+                    notice.Img = "img/" + fileName;
 
                     await _noticeService.AddNoticeAsync(notice);
                     return RedirectToAction("Index");
