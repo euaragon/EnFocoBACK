@@ -195,20 +195,20 @@
                 cancelButtonText: "Cancelar"
             }).then((result) => {
                 if (result.isConfirmed) {
-                    fetch(`/edit/${data.Id}`, { // Asegúrate de que esto coincida con la ruta del controlador
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify(data)
-                    })
-                    // fetch(`/${data.Id}`, {
+                    // fetch(`/edit/${data.Id}`, { // Asegúrate de que esto coincida con la ruta del controlador
                     //     method: 'POST',
                     //     headers: {
                     //         'Content-Type': 'application/json'
                     //     },
                     //     body: JSON.stringify(data)
                     // })
+                    fetch(`/${data.Id}`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(data)
+                    })
                         .then(response => response.json())
                         .then(responseData => {
                             if (responseData.success) {
