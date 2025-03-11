@@ -184,6 +184,8 @@
             data.Issue = document.getElementById("issueInput").value;
             data.Text = tinymce.get('Text').getContent();
 
+           
+
             Swal.fire({
                 title: "¿Guardar cambios?",
                 text: "Los cambios realizados serán permanentes.",
@@ -195,21 +197,23 @@
                 cancelButtonText: "Cancelar"
             }).then((result) => {
                 if (result.isConfirmed) {
-                    // fetch(`/edit/${data.Id}`, { // Asegúrate de que esto coincida con la ruta del controlador
-                    //     method: 'POST',
-                    //     headers: {
-                    //         'Content-Type': 'application/json'
-                    //     },
-                    //     body: JSON.stringify(data)
-                    // })
-                    fetch(`/${data.Id}`, {
+                    let path = window.location.pathname;
+                    let baseUrl = path.substring(0, path.lastIndexOf('/'));
+                    let url = `${baseUrl}/${data.Id}`;
+                    // fetch(`/${data.Id}`, {
+                    fetch(url, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json'
                         },
                         body: JSON.stringify(data)
                     })
-                        .then(response => response.json())
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error(`HTTP error! status: ${response.status}`);
+                            }
+                            return response.json();
+                        })
                         .then(responseData => {
                             if (responseData.success) {
                                 Swal.fire("Guardado", responseData.message, "success")
@@ -217,6 +221,10 @@
                             } else {
                                 Swal.fire("Error", responseData.message, "error");
                             }
+                        })
+                        .catch(jsonError => {
+                            console.error("Error parsing JSON:", jsonError);
+                            Swal.fire("Error", "Error al procesar la respuesta del servidor.", "error");
                         })
                         .catch(error => {
                             console.error("Error:", error);
