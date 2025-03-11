@@ -216,6 +216,7 @@
                         })
                         .then(responseData => {
                             if (responseData.success) {
+                                console.log(url);
                                 Swal.fire("Guardado", responseData.message, "success")
                                     .then(() => window.location.reload());
                             } else {
