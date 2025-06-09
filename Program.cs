@@ -1,105 +1,114 @@
 using EnFoco_new.Data;
-using EnFoco_new.Models;
 using EnFoco_new.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Routing.Constraints;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 using System.Text.Json;
-using Microsoft.Data.SqlClient;
+using NSwag;
+using NSwag.Generation.AspNetCore;
+
+
+
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Configurar conexión a SQL Server
+// Cadena de conexión
 var connectionString = builder.Configuration.GetConnectionString("EnFocoDB");
 
+// Registrar DbContext con soporte para Identity
+builder.Services.AddDbContext<EnFocoDb>(options =>
+    options.UseSqlServer(connectionString));
 
-try
+// Agregar Identity
+builder.Services.AddIdentity<IdentityUser, IdentityRole>()
+    .AddEntityFrameworkStores<EnFocoDb>()
+    .AddDefaultTokenProviders();
+
+// Configuración de JWT Authentication
+var jwtSettings = builder.Configuration.GetSection("JwtSettings");
+var key = Encoding.ASCII.GetBytes(jwtSettings["SecretKey"]!);
+
+builder.Services.AddAuthentication(options =>
 {
-    using (SqlConnection connection = new SqlConnection(connectionString))
-    {
-        connection.Open();
-        Console.WriteLine("Conexión exitosa a la base de datos.");
-    }
-}
-catch (Exception ex)
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
 {
-    Console.WriteLine("Error al conectar a la base de datos: " + ex.Message);
-    // Log the exception for detailed information
-    builder.Logging.AddConsole(); // Or your preferred logging provider
-    var logger = builder.Build().Services.GetRequiredService<ILogger<Program>>();
-    logger.LogError(ex, "Error de conexión a la base de datos");
-
-
-    // Decide how to handle the connection failure.  For example:
-    throw new Exception("Error de conexión a la base de datos: " + ex.Message); // Stop the app
-    //Or, if you want the app to continue, even with the DB connection failure:
-    //Console.WriteLine("La aplicacion continuara sin conexion a la base de datos.");
-}
-
-
-
-builder.Services.AddDbContext<EnFocoDb>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("EnFocoDB")));
-builder.Services.AddScoped<NoticeService>();
-builder.Services.AddLogging();
-// Configurar autenticación con cookies
-builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-    .AddCookie(options =>
+    options.RequireHttpsMetadata = false; // ¡Ojo en producción!
+    options.SaveToken = true;
+    options.TokenValidationParameters = new TokenValidationParameters
     {
-        options.LoginPath = "/Home/Index"; // Redirigir a esta página si no está autenticado
-        options.LogoutPath = "/Home/Index";
-        options.AccessDeniedPath = "/Home/Index";
+        ValidateIssuerSigningKey = true,
+        IssuerSigningKey = new SymmetricSecurityKey(key),
+        ValidateIssuer = false,
+        ValidateAudience = false
+    };
+});
+
+// Registrar servicios
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<INoticeService, NoticeService>();
+builder.Services.AddScoped<INewsletterService, NewsletterService>();
+
+// Configurar CORS para que Blazor WASM pueda consumir la API
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowBlazorClient", policy =>
+    {
+        policy.WithOrigins("http://localhost:5202") // Exacto
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials(); // Importante si manejas cookies
+    });
+});
+
+// Solo agregar controladores API
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
     });
 
-builder.Services.AddAuthorization();
-
-builder.Services.AddControllersWithViews().AddJsonOptions(options =>
+builder.Services.AddOpenApiDocument(config =>
 {
-    options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+    config.Title = "EnFoco API";
+    config.Version = "v1";
+    config.Description = "API para la gestión de noticias de EnFoco";
+
+    // Definición del esquema de seguridad para JWT
+    config.AddSecurity("JWT", new NSwag.OpenApiSecurityScheme
+    {
+        Type = NSwag.OpenApiSecuritySchemeType.ApiKey,
+        Name = "Authorization",
+        In = NSwag.OpenApiSecurityApiKeyLocation.Header,
+        Description = "Introduce el token JWT como: Bearer {token}"
+    });
+
+    // Requisito de seguridad: aplicar el esquema a todas las operaciones
+    config.OperationProcessors.Add(
+        new NSwag.Generation.Processors.Security.AspNetCoreOperationSecurityScopeProcessor("JWT"));
 });
+
 var app = builder.Build();
 
+//app.UseHttpsRedirection();
 
+// Usar CORS con la política definida
+app.UseCors("AllowBlazorClient");
 
-app.UseHttpsRedirection();
-app.UseStaticFiles();
-
-if (!app.Environment.IsDevelopment())
-{
-    app.UseExceptionHandler("/Home/Error");
-    app.UseStatusCodePagesWithReExecute("/Home/Error", "?statusCode={0}");
-}
-
-app.UseRouting();
-
-// Activar autenticación y autorización
-app.UseAuthentication();
+app.UseAuthentication(); // ¡Asegúrate de que UseAuthentication venga antes de UseAuthorization!
 app.UseAuthorization();
 
-// Endpoint para agregar noticias (API REST)
-app.MapPost("noticias/", async (Notice n, EnFocoDb db) =>
-{
-    db.Notices.Add(n);
-    await db.SaveChangesAsync();
-    return Results.Created($"noticias/{n.Id}", n);
-});
+app.UseOpenApi();
+app.UseSwaggerUi();
+app.UseReDoc();
 
-app.MapControllerRoute(
-    name: "edit-route", // Nombre de la ruta (puede ser cualquiera)
-    pattern: "{id}",
-    defaults: new { controller = "Home", action = "Edit" } // Controlador y acción
+// Mapear controladores API
+app.MapControllers();
 
-);
-
-//app.MapControllerRoute(
-//    name: "edit-route",
-//    pattern: "{id}",
-//    defaults: new { controller = "Home", action = "Edit" },
-//    constraints: new { httpMethod = new HttpMethodRouteConstraint("GET") }
-//);
-
-app.MapControllerRoute(
-    name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
-
+app.UseStaticFiles();
 
 app.Run();

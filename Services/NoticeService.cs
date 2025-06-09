@@ -5,10 +5,10 @@ using Microsoft.Extensions.Logging;
 
 namespace EnFoco_new.Services
 {
-    public class NoticeService
+    public class NoticeService : INoticeService
     {
         private readonly EnFocoDb _context;
-        private readonly ILogger<NoticeService> _logger; // El logger
+        private readonly ILogger<NoticeService> _logger;
 
         public NoticeService(EnFocoDb context, ILogger<NoticeService> logger)
         {
@@ -16,28 +16,28 @@ namespace EnFoco_new.Services
             _logger = logger;
         }
 
-        public IList<Notice> GetNotice()
+        public async Task<List<Notice>> GetAllNoticesAsync()
         {
-            return _context.Notices.ToList();
+            return await _context.Notices
+                .OrderByDescending(n => n.Id)
+                .ToListAsync();
         }
 
-        public IList<Newsletter> GetNewsletter()
-        {
-            return _context.Newsletters.ToList();
-        }
+        public IList<Notice> GetNotice() => _context.Notices.ToList();
+
+        public IList<Newsletter> GetNewsletter() => _context.Newsletters.ToList();
 
         public async Task<Notice?> GetNoticeByIdAsync(int id)
         {
-            var notice = await _context.Notices.FindAsync(id);
-            return notice;
+            return await _context.Notices.FindAsync(id);
         }
+
+
 
         public async Task AddNoticeAsync(Notice notice)
         {
             if (notice == null)
-            {
-                throw new ArgumentNullException(nameof(notice)); // Lanza una excepción si el objeto es nulo
-            }
+                throw new ArgumentNullException(nameof(notice));
 
             try
             {
@@ -46,11 +46,8 @@ namespace EnFoco_new.Services
             }
             catch (Exception ex)
             {
-                // Log del error (usando un logger adecuado)
                 _logger.LogError(ex, "Error al agregar la noticia.");
-
-                // Opcional: Relanzar la excepción para que el controlador la maneje
-                throw; // o throw new Exception("Error al guardar la noticia", ex);
+                throw;
             }
         }
 
@@ -59,29 +56,22 @@ namespace EnFoco_new.Services
             try
             {
                 if (string.IsNullOrWhiteSpace(searchTerm))
-                {
                     return new List<Notice>();
-                }
 
                 searchTerm = searchTerm.ToLower();
-                var searchResults = _context.Notices
+
+                return _context.Notices
                     .Where(notice =>
                         (notice.Title != null && notice.Title.ToLower().Contains(searchTerm)) ||
-                        (notice.Text != null && notice.Text.ToLower().Contains(searchTerm))
-                    )
+                        (notice.Text != null && notice.Text.ToLower().Contains(searchTerm)))
                     .ToList();
-
-                return searchResults;
             }
             catch (Exception ex)
             {
-                // Aquí puedes registrar el error usando algún sistema de logging
                 Console.WriteLine($"Error en la búsqueda: {ex.Message}");
-                return new List<Notice>(); // Retorna una lista vacía en caso de error
+                return new List<Notice>();
             }
         }
-
-
 
         public async Task DeleteNoticeAsync(int id)
         {
@@ -95,19 +85,60 @@ namespace EnFoco_new.Services
 
         public async Task UpdateNoticeAsync(Notice notice)
         {
-            // 1.  Verificación (opcional pero recomendada):  Asegura que la entidad no esté en estado Detached.
             if (_context.Entry(notice).State == EntityState.Detached)
             {
-                _context.Attach(notice); // Si está Detached, adjúntala para que EF Core la rastree
+                _context.Attach(notice);
             }
 
-            // 2.  No es necesario buscar la entidad. EF Core ya rastrea los cambios.
-            _context.Notices.Update(notice); // Actualiza la entidad (EF Core ya sabe qué cambiar)
-
-            // 3.  Guarda los cambios.
+            _context.Notices.Update(notice);
             await _context.SaveChangesAsync();
         }
 
+        public async Task<IList<Notice>> GetPaginatedNoticesAsync(int page, int pageSize, string? searchTerm = null, string? category = null)
+        {
+            IQueryable<Notice> query = _context.Notices;
 
+            if (!string.IsNullOrEmpty(searchTerm))
+            {
+                query = query.Where(n => (n.Title != null && n.Title.ToLower().Contains(searchTerm.ToLower())) || (n.Text != null && n.Text.ToLower().Contains(searchTerm.ToLower())));
+            }
+
+            if (!string.IsNullOrEmpty(category))
+            {
+                var loweredCategory = category.ToLowerInvariant();
+                query = query.Where(n => n.Category.ToString().ToLowerInvariant() == loweredCategory);
+            }
+
+            // Ejecutamos la consulta sin paginar primero (esto se hace en la base)
+            var allResults = await query
+                .OrderByDescending(n => n.Id)
+                .ToListAsync();
+
+            // Luego paginamos en memoria (evita OFFSET/FETCH)
+            var paginatedResults = allResults
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
+
+            return paginatedResults;
+        }
+
+        public async Task<int> GetTotalNoticesCountAsync(string? searchTerm = null, string? category = null)
+        {
+            IQueryable<Notice> query = _context.Notices;
+
+            if (!string.IsNullOrEmpty(searchTerm))
+            {
+                query = query.Where(n => (n.Title != null && n.Title.ToLower().Contains(searchTerm.ToLower())) || (n.Text != null && n.Text.ToLower().Contains(searchTerm.ToLower())));
+            }
+
+            if (!string.IsNullOrEmpty(category))
+            {
+                var loweredCategory = category.ToLowerInvariant();
+                query = query.Where(n => n.Category.ToString().ToLowerInvariant() == loweredCategory);
+            }
+
+            return await query.CountAsync();
+        }
     }
 }

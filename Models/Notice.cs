@@ -24,11 +24,16 @@ namespace EnFoco_new.Models
     public class Notice
     {
         public int Id { get; set; }
-        public required string Title { get; set; } 
-        public required string Subtitle { get; set; } 
-        public required string Issue { get; set; } 
-        public required string Text { get; set; } 
-        public required string Img { get; set; } 
+        [Required]
+        public string? Title { get; set; }
+        [Required]
+        public string? Subtitle { get; set; } 
+        [Required]
+        public string? Issue { get; set; } 
+        [Required]
+        public string? Text { get; set; } 
+        
+        public string? Img { get; set; } 
         public bool IsFeatured { get; set; } = false;
         public NoticeCategory Category { get; set; }
         public NoticeSection Section { get; set; }
@@ -39,8 +44,6 @@ namespace EnFoco_new.Models
         public IFormFile? ImageFile { get; set; }
     }
 
-    public class NoticeDto : Notice
-    {
-    }
+    
 
 }

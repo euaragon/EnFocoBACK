@@ -1,0 +1,394 @@
+    //public class HomeController : Controller
+    //{
+    //    private readonly ILogger<HomeController> _logger;
+    //    private readonly NoticeService _noticeService;
+    //    private readonly IWebHostEnvironment _webHostEnvironment;
+    //    private readonly EnFocoDb _context; // 
+
+    //    public HomeController(ILogger<HomeController> logger, NoticeService noticeService, IWebHostEnvironment webHostEnvironment, EnFocoDb context)
+    //    {
+    //        _logger = logger;
+    //        _noticeService = noticeService;
+    //        _webHostEnvironment = webHostEnvironment;
+    //        _context = context; 
+    //    }
+
+
+    //    public IActionResult Index(int page = 1, int pageSize = 6, string searchTerm = null, string category = null)
+    //    {
+    //        var allNotices = _noticeService.GetNotice().AsQueryable(); // Start with an IQueryable
+
+    //        if (!string.IsNullOrEmpty(searchTerm))
+    //        {
+    //            allNotices = allNotices.Where(n => n.Title.Contains(searchTerm) || n.Issue.Contains(searchTerm));
+    //        }
+
+    //        if (!string.IsNullOrEmpty(category))
+    //        {
+    //            if (Enum.TryParse(category, out NoticeCategory parsedCategory))
+    //            {
+    //                allNotices = allNotices.Where(n => n.Category == parsedCategory);
+    //            }
+    //        }
+
+    //        allNotices = allNotices.OrderByDescending(notice => notice.Id); // Order after filtering
+
+    //        var totalCount = allNotices.Count();
+    //        var pageCount = (int)Math.Ceiling((double)totalCount / pageSize);
+
+    //        var notices = allNotices.Skip((page - 1) * pageSize).Take(pageSize).ToList();
+
+    //        var model = new PagedResult<Notice>
+    //        {
+    //            Data = notices,
+    //            Page = page,
+    //            PageSize = pageSize,
+    //            TotalCount = totalCount,
+    //            TotalPages = pageCount
+    //        };
+
+    //        // Asegúrate de que ViewBag.Categories nunca sea nulo
+    //        var categories = Enum.GetValues(typeof(NoticeCategory)).Cast<NoticeCategory>().ToList();
+    //        ViewBag.Categories = categories;
+
+    //        return View(model);
+    //    }
+
+
+
+    //    public IActionResult Editorial()
+    //    {
+    //        var editorialNotices = _noticeService.GetNotice().OrderByDescending(notice => notice.Id)
+    //            .Where(notice => notice.Section == NoticeSection.category1)
+    //            .ToList();
+
+    //        return View(editorialNotices);
+    //    }
+
+
+    //    public IActionResult Noticias()
+    //    {
+    //        var noticiasNotices = _noticeService.GetNotice().OrderByDescending(notice => notice.Id)
+    //            .Where(notice => notice.Section == NoticeSection.category2)
+    //            .ToList();
+
+    //        return View(noticiasNotices);
+    //    }
+
+    //    public IActionResult Analisis()
+    //    {
+    //        var analisisNotices = _noticeService.GetNotice().OrderByDescending(notice => notice.Id)
+    //            .Where(notice => notice.Section == NoticeSection.category3)
+    //            .ToList();
+
+    //        return View(analisisNotices);
+    //    }
+
+
+    //    [HttpGet("{id}")]
+    //    public async Task<IActionResult> Detail(int id)
+    //    {
+
+    //        var notice = await _noticeService.GetNoticeByIdAsync(id);
+
+    //        if (notice == null)
+    //        {
+    //            return NotFound();
+    //        }
+
+    //        var noticeDto = new NoticeDto
+    //        {
+    //            Id = notice.Id,
+    //            Title = notice.Title,
+    //            Issue = notice.Issue,
+    //            Subtitle = notice.Subtitle,
+    //            Text = notice.Text,
+    //            Img = notice.Img,
+    //            IsFeatured = notice.IsFeatured,
+    //            Category = notice.Category,
+    //            Section = notice.Section
+
+    //        };
+
+    //        return View(noticeDto);
+    //    }
+
+
+
+
+
+
+
+    //    [HttpGet]
+    //    public IActionResult Login()
+    //    {
+    //        return View();
+    //    }
+
+
+
+    //    [HttpPost]
+    //    public async Task<IActionResult> Login(string name, string password)
+    //    {
+    //        // Buscar el usuario por su nombre
+    //        var user = await _context.Users.FirstOrDefaultAsync(u => u.Name == name);
+
+    //        // Si el usuario no existe o la contraseña no coincide
+    //        if (user == null || user.PasswordHash != password)
+    //        {
+    //            ModelState.AddModelError(string.Empty, "Credenciales no válidas");
+    //            return View();
+    //        }
+
+    //        // Si la verificación es exitosa, crear los claims
+    //        var claims = new List<Claim>
+    //{
+    //    new Claim(ClaimTypes.Name, user.Name)
+    //};
+
+    //        // Crear la identidad y principal para autenticación
+    //        var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+    //        var principal = new ClaimsPrincipal(identity);
+
+    //        // Firmar al usuario y redirigir al Index
+    //        await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
+
+    //        return RedirectToAction("Index", "Home");
+    //    }
+
+
+
+
+    //    [HttpPost]
+    //    [ValidateAntiForgeryToken]
+    //    public async Task<IActionResult> Logout()
+    //    {
+    //        await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+    //        return RedirectToAction("Index", "Home");
+    //    }
+
+
+    //    [Authorize]
+    //    [HttpGet]
+    //    public IActionResult Create()
+    //    {
+    //        return View();
+    //    }
+
+
+    //    [HttpPost]
+    //    public async Task<IActionResult> Create(Notice notice)
+    //    {
+    //        if (ModelState.IsValid)
+    //        {
+    //            try
+    //            {
+    //                if (notice.ImageFile == null || notice.ImageFile.Length == 0)
+    //                {
+    //                    ModelState.AddModelError("ImageFile", "La imagen es requerida.");
+    //                    return View(notice);
+    //                }
+
+
+    //                using (var image = Image.Load(notice.ImageFile.OpenReadStream()))
+    //                {
+    //                    if (image.Height > image.Width)
+    //                    {
+    //                        ModelState.AddModelError("ImageFile", "La imagen debe ser horizontal.");
+    //                        return View(notice);
+    //                    }
+
+
+    //                }
+
+
+    //                var fileName = Path.GetFileName(notice.ImageFile.FileName);
+    //                var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "img", fileName);
+
+    //                using (var stream = new FileStream(filePath, FileMode.Create))
+    //                {
+    //                    await notice.ImageFile.CopyToAsync(stream);
+    //                }
+
+    //                notice.Img = "img/" + fileName;
+
+    //                await _noticeService.AddNoticeAsync(notice);
+    //                return RedirectToAction("Index");
+    //            }
+    //            catch (Exception ex)
+    //            {
+    //                _logger.LogError(ex, "Error al crear la noticia.");
+    //                ModelState.AddModelError("", "Ocurrió un error al guardar la noticia. Por favor, inténtalo de nuevo.");
+    //                return View(notice);
+    //            }
+    //        }
+
+    //        return View();
+    //    }
+
+
+
+
+    //    [Authorize]
+    //    [HttpPost("{id}")]
+    //    public async Task<IActionResult> Edit(int id, [FromBody] NoticeDto noticeDto)
+    //    {
+    //        if (noticeDto == null)
+    //        {
+    //            _logger.LogError("Los datos no llegaron correctamente al servidor: " + id);
+    //            return BadRequest(new { message = "Datos inválidos: La solicitud no contiene datos." });
+    //        }
+
+    //        if (!ModelState.IsValid) // Verifica la validación del modelo
+    //        {
+    //            var errors = ModelState.Values.SelectMany(v => v.Errors).ToList();
+    //            var errorMessages = new List<string>();
+    //            foreach (var error in errors)
+    //            {
+    //                errorMessages.Add(error.ErrorMessage);
+    //            }
+
+    //            return BadRequest(new { message = "Error de validación", errors = errorMessages }); // Devuelve errores de validación detallados
+    //        }
+
+
+    //        try
+    //        {
+    //            var notice = await _noticeService.GetNoticeByIdAsync(noticeDto.Id);
+    //            if (notice == null)
+    //            {
+    //                return NotFound(new { message = "Noticia no encontrada." }); // Mensaje más descriptivo
+    //            }
+
+    //            // Actualiza las propiedades de la noticia SOLO si son diferentes
+    //            if (notice.Title != noticeDto.Title) notice.Title = noticeDto.Title;
+    //            if (notice.Subtitle != noticeDto.Subtitle) notice.Subtitle = noticeDto.Subtitle;
+    //            if (notice.Issue != noticeDto.Issue) notice.Issue = noticeDto.Issue;
+    //            if (notice.Text != noticeDto.Text) notice.Text = noticeDto.Text;
+    //            if (notice.Img != noticeDto.Img) notice.Img = noticeDto.Img;
+    //            if (notice.IsFeatured != noticeDto.IsFeatured) notice.IsFeatured = noticeDto.IsFeatured;
+    //            if (notice.Category != noticeDto.Category) notice.Category = noticeDto.Category;
+    //            if (notice.Section != noticeDto.Section) notice.Section = noticeDto.Section;
+    //            if (notice.ImageUrl != noticeDto.ImageUrl) notice.ImageUrl = noticeDto.ImageUrl;
+
+
+
+    //            await _noticeService.UpdateNoticeAsync(notice);
+
+    //            return Ok(new { success = true, message = "Noticia actualizada correctamente" }); // Incluye "success" para el frontend
+    //        }
+    //        catch (DbUpdateConcurrencyException ex) // Manejo de concurrencia
+    //        {
+    //            return Conflict(new { message = "La noticia ha sido modificada por otro usuario. Intente nuevamente.", error = ex.Message }); // Código 409
+    //        }
+    //        catch (Exception ex)
+    //        {
+    //            _logger.LogError(ex, "Error al editar la noticia: " + ex.Message); // Loguea el error
+    //            return StatusCode(500, new { message = "Error interno del servidor.", error = ex.Message }); // Código 500
+    //        }
+    //    }
+
+
+
+
+
+
+    //    public async Task<IActionResult> Delete(int id)
+    //    {
+    //        var notice = await _noticeService.GetNoticeByIdAsync(id);
+    //        if (notice == null)
+    //        {
+    //            return NotFound();
+    //        }
+
+    //        await _noticeService.DeleteNoticeAsync(id);
+
+    //        return RedirectToAction("Index");
+    //    }
+
+
+
+
+
+
+
+
+    //    [HttpPost]
+    //    public IActionResult SubscribeNewsletter(Newsletter newsletter, [FromServices] EnFocoDb dbContext)
+    //    {
+    //        if (ModelState.IsValid)
+    //        {
+    //            dbContext.Newsletters.Add(newsletter);
+    //            dbContext.SaveChanges();
+    //            return RedirectToAction("Suscribe");
+    //        }
+    //        return View("Index", newsletter);
+    //    }
+
+
+    //    public IActionResult Suscribe()
+    //    {
+    //        return View();
+    //    }
+
+    //    public IActionResult Suscriptores()
+    //    {
+    //        List<EnFoco_new.Models.Newsletter> listaDeSuscriptores = (List<Newsletter>)_noticeService.GetNewsletter();
+    //        return View(listaDeSuscriptores);
+    //    }
+
+
+
+    //    [HttpGet]
+    //    public IActionResult Search(string searchTerm, int page = 1, int pageSize = 4)
+    //    {
+    //        if (string.IsNullOrWhiteSpace(searchTerm))
+    //        {
+    //            return View("Index", new PagedResult<Notice>
+    //            {
+    //                Data = new List<Notice>(),
+    //                Page = page,
+    //                PageSize = pageSize,
+    //                TotalCount = 0,
+    //                TotalPages = 0
+    //            });
+    //        }
+
+    //        searchTerm = searchTerm.Trim(); // Evita espacios en blanco al inicio o final
+
+    //        var searchResults = _noticeService.SearchNotices(searchTerm).ToList(); // Convierte en lista para evitar múltiples enumeraciones
+    //        var totalCount = searchResults.Count;
+    //        var pageCount = (int)Math.Ceiling((double)totalCount / pageSize);
+
+    //        var notices = searchResults.Skip((page - 1) * pageSize).Take(pageSize).ToList();
+
+    //        var model = new PagedResult<Notice>
+    //        {
+    //            Data = notices,
+    //            Page = page,
+    //            PageSize = pageSize,
+    //            TotalCount = totalCount,
+    //            TotalPages = pageCount
+    //        };
+
+    //        return View("Index", model);
+    //    }
+
+
+
+
+
+
+
+    //    [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+    //    public IActionResult Error(int? statusCode)
+    //    {
+    //        if (statusCode == 404)
+    //        {
+    //            return View("NotFound");
+    //        }
+
+    //        return View("Error"); // Vista de error general
+    //        // return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+    //    }
+    //}
