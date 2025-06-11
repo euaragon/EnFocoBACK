@@ -8,11 +8,21 @@ using System.Text;
 using System.Text.Json;
 using NSwag;
 using NSwag.Generation.AspNetCore;
-
+using Serilog;
 
 
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Configuración de Serilog
+Log.Logger = new LoggerConfiguration()
+    .ReadFrom.Configuration(builder.Configuration) // Lee la configuración de Serilog desde appsettings.json
+    .Enrich.FromLogContext() // Enriquecer los logs con información del contexto
+    .WriteTo.Console() // Escribe los logs en la consola
+    .WriteTo.File("logs/enfoco.txt", rollingInterval: RollingInterval.Day) // Escribe los logs en un archivo rotatorio diario
+    .CreateLogger();
+
+builder.Host.UseSerilog(); // Usa Serilog como el logger principal de la aplicación
 
 // Cadena de conexión
 var connectionString = builder.Configuration.GetConnectionString("EnFocoDB");

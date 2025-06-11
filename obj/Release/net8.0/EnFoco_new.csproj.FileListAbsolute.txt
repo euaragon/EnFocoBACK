@@ -137,3 +137,4 @@ C:\Users\earagon.TRIBUNAL\Desktop\EnFoco_new\obj\Release\net8.0\EnFoco_new.genru
 C:\Users\earagon.TRIBUNAL\Desktop\EnFoco_new\obj\Release\net8.0\ref\EnFoco_new.dll
 C:\Users\earagon.TRIBUNAL\Desktop\EnFoco_new\bin\Release\net8.0\SixLabors.ImageSharp.dll
 C:\Users\earagon.TRIBUNAL\Desktop\EnFoco_new\obj\Release\net8.0\EnFoco_new.sourcelink.json
+C:\Users\earagon.TRIBUNAL\Desktop\EnFoco_new\obj\Release\net8.0\EnFoco_new.MvcApplicationPartsAssemblyInfo.cs

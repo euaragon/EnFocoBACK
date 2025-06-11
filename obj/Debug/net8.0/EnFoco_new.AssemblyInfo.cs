@@ -15,7 +15,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("EnFoco_new")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+b7f507d03a4477e9e58d00f6e6a59b2f8d21e644")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+13b16dc2766e3686f27726e38c9daa56901948ba")]
 [assembly: System.Reflection.AssemblyProductAttribute("EnFoco_new")]
 [assembly: System.Reflection.AssemblyTitleAttribute("EnFoco_new")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
